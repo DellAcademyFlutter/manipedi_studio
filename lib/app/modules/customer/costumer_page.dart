@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import 'package:manipedi_studio/app/app_controller.dart';
 import 'package:manipedi_studio/app/data/customer_dao.dart';
-import 'package:manipedi_studio/app/modules/client/Pages/customer_register.dart';
-import '../../app_controller.dart';
-import 'Components/customer_widget.dart';
-import 'client_controller.dart';
+import 'package:manipedi_studio/app/modules/customer/Pages/customer_register.dart';
+import 'package:manipedi_studio/app/modules/customer/costumer_controller.dart';
+import 'package:manipedi_studio/app/modules/customer/components/customer_widget.dart';
 
 class CustomerPage extends StatefulWidget {
   @override
@@ -48,7 +48,7 @@ class _CustomerPageState extends State<CustomerPage> {
                 return appController.customers != null
                     ? Expanded(
                         child: SizedBox(
-                          height: 200, //TODO
+                          height: MediaQuery.of(context).size.height,
                           child: ListView.builder(
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,

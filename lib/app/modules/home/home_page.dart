@@ -2,12 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:manipedi_studio/app/modules/Config/config_page.dart';
-import 'package:manipedi_studio/app/modules/client/client_module.dart';
+import 'package:manipedi_studio/app/modules/customer/costumer_module.dart';
+import 'package:manipedi_studio/app/modules/home/home_controller.dart';
+import 'package:manipedi_studio/app/modules/job/job_page.dart';
 import 'package:manipedi_studio/app/modules/result/result_page.dart';
-import 'package:manipedi_studio/app/modules/schedule/schedule_page.dart';
-import 'package:manipedi_studio/app/modules/service/service_page.dart';
-
-import 'home_controller.dart';
+import 'package:manipedi_studio/app/modules/schedule/schedule_module.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -21,9 +20,9 @@ class _HomePageState extends ModularState<HomePage, HomeController> {
       body: PageView(
         controller: controller.pageViewController,
         children: [
-          SchedulePage(),
+          RouterOutlet(module: ScheduleModule()),
           RouterOutlet(module: CustomerModule()),
-          ServicePage(),
+          JobPage(),
           ResultPage(),
           ConfigPage(),
         ],

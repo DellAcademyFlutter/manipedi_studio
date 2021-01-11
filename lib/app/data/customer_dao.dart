@@ -12,7 +12,7 @@ class CustomerDao {
       final db = await DbHelper.getDatabase();
 
       await db.insert(
-        DbHelper.TABLE_CUSTOMER_NAME,
+        DbHelper.TABLE_CUSTOMER_SERVICE,
         customer.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
@@ -26,7 +26,7 @@ class CustomerDao {
     final db = await DbHelper.getDatabase();
 
     await db.update(
-      DbHelper.TABLE_CUSTOMER_NAME,
+      DbHelper.TABLE_CUSTOMER_SERVICE,
       customer.toMap(),
       where: "id = ?",
       whereArgs: [customer.id],
@@ -38,7 +38,7 @@ class CustomerDao {
     final db = await DbHelper.getDatabase();
 
     await db.delete(
-      DbHelper.TABLE_CUSTOMER_NAME,
+      DbHelper.TABLE_CUSTOMER_SERVICE,
       where: "id = ?",
       whereArgs: [id],
     );
@@ -48,7 +48,7 @@ class CustomerDao {
   Future<List<Customer>> getCustomers() async {
     try {
       final db = await DbHelper.getDatabase();
-      final maps = await db.query(DbHelper.TABLE_CUSTOMER_NAME);
+      final maps = await db.query(DbHelper.TABLE_CUSTOMER_SERVICE);
 
       return List.generate(
         maps.length,

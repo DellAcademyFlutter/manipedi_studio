@@ -1,8 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:manipedi_studio/app/app_controller.dart';
 import 'package:manipedi_studio/app/data/customer_dao.dart';
 import 'package:manipedi_studio/app/model/customer.dart';
-
-import '../../app_controller.dart';
 
 class CustomerController {
   final appController = Modular.get<AppController>();

@@ -1,12 +1,12 @@
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:manipedi_studio/app/modules/service/service_controller.dart';
-import 'package:manipedi_studio/app/modules/service/service_page.dart';
+import 'package:manipedi_studio/app/modules/job/job_controller.dart';
+import 'package:manipedi_studio/app/modules/job/job_page.dart';
 
-class ServiceModule extends ChildModule {
+class JobModule extends ChildModule {
   @override
   // Injecoes de dependencia
   List<Bind> get binds => [
-    Bind((i) => ServiceController())
+    Bind((i) => JobController())
   ];
 
   @override
@@ -14,10 +14,10 @@ class ServiceModule extends ChildModule {
   List<ModularRouter> get routers => [
     ModularRouter<String>(
       Modular.initialRoute,
-      child: (_, args) => ServicePage(),
+      child: (_, args) => JobPage(),
       transition: TransitionType.leftToRight,
     ),
   ];
 
-  static const routeName = '/service';
+  static const routeName = '/JobModule';
 }

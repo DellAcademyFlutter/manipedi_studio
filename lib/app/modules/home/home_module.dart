@@ -1,5 +1,6 @@
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:manipedi_studio/app/modules/client/client_controller.dart';
+import 'package:manipedi_studio/app/modules/customer/costumer_controller.dart';
+import 'package:manipedi_studio/app/modules/job/job_controller.dart';
 import 'home_controller.dart';
 import 'home_page.dart';
 
@@ -8,7 +9,8 @@ class HomeModule extends ChildModule {
   // Injecoes de dependencia
   List<Bind> get binds => [
     Bind((i) => HomeController()),
-    Bind((i) => CustomerController())
+    Bind((i) => CustomerController()),
+    Bind((i) => JobController()),
   ];
 
   @override

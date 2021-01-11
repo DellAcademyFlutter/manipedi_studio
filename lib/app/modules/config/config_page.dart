@@ -1,17 +1,32 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-class ConfigPage extends StatefulWidget {
-  @override
-  _ClientPageState createState() => _ClientPageState();
-}
+import 'components/change_theme_widget.dart';
+import 'components/text_size_widget.dart';
 
-class _ClientPageState extends State<ConfigPage> {
+class ConfigPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Text('ConfigPage '),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Configurações'),
+        centerTitle: true,
+      ),
+      body: Container(
+        alignment: Alignment.topCenter,
+        child: ListView(
+          children: [
+            ChangeThemeWidget(),
+            TextSizeWidget(),
+          ],
+        ),
       ),
     );
   }
 }
+
+
+
+
+
+
