@@ -22,6 +22,7 @@ class AppController extends ChangeNotifier {
   List<Customer> customers;
   List<Job> jobs;
   List<Schedule> schedules;
+  Map<DateTime, List> events = {};
 
   //
   // Customers
@@ -29,11 +30,9 @@ class AppController extends ChangeNotifier {
 
   /// Adiciona um [Customer] a lista de [Customer]s e no BD.
   addCustomer({Customer customer}) async {
-    int generatedId;
     await customerDao
         .insertCustomer(customer)
-        .then((value) => generatedId = value);
-    customer.id = generatedId;
+        .then((value) => customer.id = value);
     customers.add(customer);
 
     notifyListeners();
@@ -128,26 +127,30 @@ class AppController extends ChangeNotifier {
     return "NothingFound";
   }
 
- //
- // Schedule
- //
+  //
+  // Schedule
+  //
 
   /// Adiciona um [Schedule] a lista de [Schedules]s e no BD.
   Future<int> addSchedule({Schedule schedule}) async {
-    int generatedId;
-
-    await scheduleDao.insertSchedule(schedule).then((value) => generatedId = value);
-    schedule.id = generatedId; // Insere o Id gerado pelo auto-incremente.
+    await scheduleDao
+        .insertSchedule(schedule)
+        .then((value) => schedule.id = value);
     schedules.add(schedule);
 
+    //Antes de adicionar na lista de events, convertepara DateTime
+    final parsedDate = DateTime.parse(schedule.date);
+    events.addAll({
+      parsedDate: ['Agendamento']
+    });
+
     notifyListeners();
-    return generatedId;
+    return schedule.id;
   }
 
   /// Salva um [Schedule] em sua tabela no Banco de Dados.
   saveSchedules({String date, String time}) {
-    final newSchedule =
-    Schedule(date: date, time: time);
+    final newSchedule = Schedule(date: date, time: time);
 
     addSchedule(schedule: newSchedule);
   }
@@ -177,6 +180,18 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Recebe uma lista de [Schedules] e atribui em eventos
+  setEventsByShedules() {
+    DateTime parsedDate;
+    for (var i = 0; i < schedules.length; i++) {
+      parsedDate = DateTime.parse(schedules[i].date);
+      events.addAll({
+        parsedDate: ['Agendamento']
+      });
+    }
+    notifyListeners();
+  }
+
   //
   // Scheduling
   //
@@ -190,5 +205,4 @@ class AppController extends ChangeNotifier {
   removeScheduling({Scheduling scheduling}) async {
     await schedulingDao.deleteScheduling(scheduling);
   }
-
 }

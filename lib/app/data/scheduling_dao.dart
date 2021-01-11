@@ -105,7 +105,7 @@ class SchedulingDao {
   }
 
   /// Retorna uma [List] de objetos [scheduling].
-  Future<List<int>> getScheduleJobsIds({int scheduleId}) async {
+  Future<List<int>> getScheduleJobsIds({int scheduleId, int customerId}) async {
     try {
       final db = await DbHelper.getDatabase();
       final maps = await db.query(DbHelper.TABLE_SCHEDULING_NAME);
@@ -113,7 +113,7 @@ class SchedulingDao {
       final userSchedulingIds = <int>[];
 
       for (var i = 0; i < maps.length; i++) {
-        if (maps[i]['scheduleId'] == scheduleId) {
+        if (maps[i]['scheduleId'] == scheduleId && maps[i]['customerId'] == customerId) {
           userSchedulingIds.add(maps[i]['jobId']);
         }
       }

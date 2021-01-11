@@ -5,6 +5,8 @@ import 'package:manipedi_studio/app/modules/schedule/pages/daily_schedules.dart'
 import 'package:manipedi_studio/app/modules/schedule/schedule_controller.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../../../app_controller.dart';
+
 class CalendarWidget extends StatefulWidget {
   @override
   _CalendarWidgetState createState() => _CalendarWidgetState();
@@ -13,10 +15,7 @@ class CalendarWidget extends StatefulWidget {
 class _CalendarWidgetState extends State<CalendarWidget> {
   CalendarController _calendarController;
   final scheduleController = Modular.get<ScheduleController>();
-  final Map<DateTime, List> _events = {DateTime(2021, 1, 4): ['New Year\'s Day']};
-
-  //Example: =
-  //   final Map<DateTime, List> _events = {DateTime(2021, 1, 4): ['New Year\'s Day']};
+  final appController = Modular.get<AppController>();
 
   @override
   void initState() {
@@ -32,12 +31,13 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   }
 
   void _onDaySelected(DateTime daySelected, List events, List holidays) {
-
     //Atualizando o dia selecionado no controller
     scheduleController.selectedDay = daySelected;
     scheduleController.day = daySelected.day.toString();
     scheduleController.month = daySelected.month.toString();
     scheduleController.year = daySelected.year.toString();
+    scheduleController.formattedDate =
+        '${scheduleController.day}-${scheduleController.month}-${scheduleController.year}';
 
     Navigator.pushNamed(context, DailySchedules.routeName);
   }
@@ -48,7 +48,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       // Configurações básicas
       //locale: 'pt_BR',
       calendarController: _calendarController,
-      events: _events,
+      events: appController.events,
 
       //Estilo do calendário
       calendarStyle: CalendarStyle(
@@ -99,23 +99,4 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       },
     );
   }
-}
-
-
-
-Widget _buildHolidaysMarker() {
-  return Row(
-    children: [
-      Container(
-        height: 40,
-        width: 40,
-        color: Colors.green,
-      ),
-      Icon(
-        Icons.auto_awesome,
-        size: 20.0,
-        color: Colors.pink[800],
-      ),
-    ],
-  );
 }

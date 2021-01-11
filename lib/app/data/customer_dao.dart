@@ -7,15 +7,18 @@ import 'package:flutter/widgets.dart';
 
 class CustomerDao {
   /// Insere um [Customer] em sua tabela
-  Future insertCustomer(Customer customer) async {
+  Future<int> insertCustomer(Customer customer) async {
     try {
       final db = await DbHelper.getDatabase();
+      int generatedId;
 
       await db.insert(
         DbHelper.TABLE_CUSTOMER_SERVICE,
         customer.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      ).then((value) => generatedId = value);
+
+      return generatedId;
     } catch (ex) {
       debugPrint("DBEXCEPTION: ${ex}");
     }

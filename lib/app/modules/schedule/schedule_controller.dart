@@ -12,14 +12,19 @@ class ScheduleController extends ChangeNotifier {
   final appController = Modular.get<AppController>();
   DateTime selectedDay;
   String day, month, year;
+  String formattedDate;
+  Customer selectedCostumer;
+
+  //Example: =
+  //   final Map<DateTime, List> _events = {DateTime(2021, 1, 4): ['New Year\'s Day']};
 
   final schedulingDao = Modular.get<SchedulingDao>();
   List<int> schedulingJobs = [];
 
-  /// Inicializa a lista de markers do postit
-  initializeScheduleJobs({int scheduleId}) async {
+  /// Inicializa a lista de jobs do Scheduling
+  initializeScheduleJobs({int scheduleId, int customerId}) async {
     await schedulingDao
-        .getScheduleJobsIds(scheduleId: scheduleId)
+        .getScheduleJobsIds(scheduleId: scheduleId, customerId: customerId)
         .then((value) {
       for (var i = 0; i < value.length; i++) {
         if (!schedulingJobs.contains(value[i])) {
@@ -47,11 +52,10 @@ class ScheduleController extends ChangeNotifier {
     notifyListeners();
   }
 
-  ScheduleConfirm({Schedule schedule, Customer customer, List<int> scheduleJobs,
-      String date, String time}) {
-
+  ScheduleConfirm({Schedule schedule, Customer customer, List<int> scheduleJobs, String date, String time}) {
     final newSchedule = Schedule(
       id: schedule?.id,
+      idCustomer: customer.id,
       time: time,
       date: date,
     );
@@ -66,14 +70,13 @@ class ScheduleController extends ChangeNotifier {
               customerId: customer.id,
               scheduleId: schedule.id,
               scheduleJobs: scheduleJobs));
-    }   // Adicionar o postit
+    } // Adicionar o postit
     else {
-      //TODO: INICIALIZAR LISTA DE SCHEDULES NO HOMEPAGE_PRIMEIRO
       appController.addSchedule(schedule: newSchedule).then((value) =>
-          associateJobsToSchedule(
-              customerId: customer.id,
-              scheduleId: value,
-              scheduleJobs: scheduleJobs));
+           associateJobsToSchedule(
+           customerId: customer.id,
+           scheduleId: value,
+           scheduleJobs: scheduleJobs));
     }
   }
 
@@ -108,5 +111,8 @@ class ScheduleController extends ChangeNotifier {
     await scheduleDao
         .getSchedules()
         .then((value) => appController.setSchedules(schedules: value));
+
+    //Atualiza a lista de eventos baseado na lista de Schedules
+    appController.setEventsByShedules();
   }
 }

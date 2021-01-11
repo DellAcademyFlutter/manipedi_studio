@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:manipedi_studio/app/model/customer.dart';
 import 'package:manipedi_studio/app/model/schedule.dart';
 import 'package:manipedi_studio/app/modules/schedule/components/custom_picker.dart';
 import 'package:manipedi_studio/app/modules/schedule/pages/schedule_job_select.dart';
@@ -28,15 +27,20 @@ class ScheduleRegister extends StatefulWidget {
 class _ScheduleRegisterState extends State<ScheduleRegister> {
   final appController = Modular.get<AppController>();
   final scheduleController = Modular.get<ScheduleController>();
-  Customer selectedCostumer;
-  String _time = "";
+  String _time;
 
   @override
   void initState() {
     super.initState();
-
     if (widget.schedule != null) {
+      //Carrega a lista de jobs do usuário no Scheduling
       scheduleController.initializeScheduleJobs(scheduleId: widget.schedule.id);
+      //TODO COLOCAR CLIENTE
+      _time = widget.schedule.time;
+    } else {
+      _time = "";
+      scheduleController.selectedCostumer = null;
+      scheduleController.schedulingJobs.clear();
     }
   }
 
@@ -65,10 +69,10 @@ class _ScheduleRegisterState extends State<ScheduleRegister> {
                   color: Colors.deepPurpleAccent,
                 ),
                 hint: Text('Escolha uma Cliente'),
-                value: selectedCostumer,
+                value: scheduleController.selectedCostumer,
                 onChanged: (newValue) {
                   setState(() {
-                    selectedCostumer = newValue;
+                    scheduleController.selectedCostumer = newValue;
                   });
                 },
                 items: appController.customers.map((customer) {
@@ -152,11 +156,12 @@ class _ScheduleRegisterState extends State<ScheduleRegister> {
                 ),
                 onPressed: () {
                   scheduleController.ScheduleConfirm(
-                      customer: selectedCostumer,
+                      customer: scheduleController.selectedCostumer,
                       schedule: widget.schedule,
                       time: _time,
                       date: scheduleController.selectedDay.toString(),
                       scheduleJobs: scheduleController.schedulingJobs);
+                  Navigator.pop(context);
                 },
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0)),
