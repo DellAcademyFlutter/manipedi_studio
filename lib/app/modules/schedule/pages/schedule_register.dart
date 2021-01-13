@@ -6,8 +6,8 @@ import 'package:manipedi_studio/app/model/schedule.dart';
 import 'package:manipedi_studio/app/modules/schedule/components/custom_picker.dart';
 import 'package:manipedi_studio/app/modules/schedule/pages/schedule_job_select.dart';
 
-import '../../../app_controller.dart';
-import '../schedule_controller.dart';
+import 'package:manipedi_studio/app/app_controller.dart';
+import 'package:manipedi_studio/app/modules/schedule/schedule_controller.dart';
 
 class ScheduleRegisterArguments {
   ScheduleRegisterArguments({this.schedule});
@@ -28,15 +28,29 @@ class _ScheduleRegisterState extends State<ScheduleRegister> {
   final appController = Modular.get<AppController>();
   final scheduleController = Modular.get<ScheduleController>();
   String _time;
+  int timeMinutes;
+  String minutesFix;
 
   @override
   void initState() {
     super.initState();
+
+    //Se o Schedule for a edição de um Schedule
     if (widget.schedule != null) {
-      //Carrega a lista de jobs do usuário no Scheduling
-      scheduleController.initializeScheduleJobs(scheduleId: widget.schedule.id);
-      //TODO COLOCAR CLIENTE
-      _time = widget.schedule.time;
+      //Carrega a lista de jobs do usuário no Scheduling e armazena na lista schedulingJobs
+      scheduleController.initializeScheduleJobs(widget.schedule.id,
+          widget.schedule.idCustomer, scheduleController.schedulingJobs);
+
+      //Zera a lista de schedulings
+      scheduleController.schedulingJobs.clear();
+
+      //Inicializa o Costumer
+      scheduleController.selectedCostumer =
+          appController.getCustomerByIdTemp(widget.schedule.idCustomer);
+
+      _time = widget.schedule.time; //Inicializa o tempo
+
+      // Se for a criação de um novo Schedule
     } else {
       _time = "";
       scheduleController.selectedCostumer = null;
@@ -99,7 +113,13 @@ class _ScheduleRegisterState extends State<ScheduleRegister> {
                       showTitleActions: true,
                       pickerModel: CustomPicker(currentTime: DateTime.now()),
                       onConfirm: (time) {
-                    _time = '${time.hour} : ${time.minute}';
+                    timeMinutes = time.minute.toInt();
+                    if (timeMinutes < 10) {
+                      minutesFix = "0${timeMinutes.toString()}";
+                    } else {
+                      minutesFix = time.minute.toString();
+                    }
+                    _time = '${time.hour} : ${minutesFix}';
                     setState(() {});
                   }, locale: LocaleType.pt);
                   setState(() {});

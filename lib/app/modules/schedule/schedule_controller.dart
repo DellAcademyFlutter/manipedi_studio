@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:manipedi_studio/app/data/customer_dao.dart';
 import 'package:manipedi_studio/app/data/schedule_dao.dart';
 import 'package:manipedi_studio/app/data/scheduling_dao.dart';
 import 'package:manipedi_studio/app/model/customer.dart';
@@ -10,26 +11,24 @@ import '../../app_controller.dart';
 
 class ScheduleController extends ChangeNotifier {
   final appController = Modular.get<AppController>();
+  final schedulingDao = Modular.get<SchedulingDao>();
+  final customerDao = Modular.get<CustomerDao>();
   DateTime selectedDay;
   String day, month, year;
   String formattedDate;
   Customer selectedCostumer;
-
-  //Example: =
-  //   final Map<DateTime, List> _events = {DateTime(2021, 1, 4): ['New Year\'s Day']};
-
-  final schedulingDao = Modular.get<SchedulingDao>();
   List<int> schedulingJobs = [];
 
   /// Inicializa a lista de jobs do Scheduling
-  initializeScheduleJobs({int scheduleId, int customerId}) async {
+  initializeScheduleJobs(
+      int scheduleId, int customerId, List<int> schedulingJobs) async {
+    schedulingJobs.clear();
+
     await schedulingDao
         .getScheduleJobsIds(scheduleId: scheduleId, customerId: customerId)
         .then((value) {
       for (var i = 0; i < value.length; i++) {
-        if (!schedulingJobs.contains(value[i])) {
-          schedulingJobs.add(value[i]);
-        }
+        schedulingJobs.add(value[i]);
       }
 
       notifyListeners();
@@ -52,7 +51,9 @@ class ScheduleController extends ChangeNotifier {
     notifyListeners();
   }
 
-  ScheduleConfirm({Schedule schedule, Customer customer, List<int> scheduleJobs, String date, String time}) {
+  ScheduleConfirm(
+      {Schedule schedule, Customer customer, List<int> scheduleJobs, String date, String time}) {
+
     final newSchedule = Schedule(
       id: schedule?.id,
       idCustomer: customer.id,
@@ -62,21 +63,18 @@ class ScheduleController extends ChangeNotifier {
 
     // Editar o postit
     if (schedule != null) {
-      appController
-          .updateSchedule(
-              index: appController.schedules.indexOf(schedule),
-              newSchedule: newSchedule)
-          .then((value) => associateJobsToSchedule(
+      appController.updateSchedule(newSchedule: newSchedule).then((value) =>
+          associateJobsToSchedule(
               customerId: customer.id,
               scheduleId: schedule.id,
               scheduleJobs: scheduleJobs));
     } // Adicionar o postit
     else {
       appController.addSchedule(schedule: newSchedule).then((value) =>
-           associateJobsToSchedule(
-           customerId: customer.id,
-           scheduleId: value,
-           scheduleJobs: scheduleJobs));
+          associateJobsToSchedule(
+              customerId: customer.id,
+              scheduleId: value,
+              scheduleJobs: scheduleJobs));
     }
   }
 

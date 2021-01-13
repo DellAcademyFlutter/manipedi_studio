@@ -18,6 +18,7 @@ class _SchedulePageState extends State<SchedulePage> {
   @override
   void initState() {
     super.initState();
+    //Inicializa os schedules do Banco
     scheduleController.initializeSchedules();
   }
 

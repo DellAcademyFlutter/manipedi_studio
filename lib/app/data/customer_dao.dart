@@ -12,11 +12,13 @@ class CustomerDao {
       final db = await DbHelper.getDatabase();
       int generatedId;
 
-      await db.insert(
-        DbHelper.TABLE_CUSTOMER_SERVICE,
-        customer.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      ).then((value) => generatedId = value);
+      await db
+          .insert(
+            DbHelper.TABLE_CUSTOMER_SERVICE,
+            customer.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          )
+          .then((value) => generatedId = value);
 
       return generatedId;
     } catch (ex) {
@@ -61,6 +63,26 @@ class CustomerDao {
       );
     } catch (ex) {
       return <Customer>[];
+    }
+  }
+
+  /// Retorna um [Customer] com um id específico.
+  Future<Customer> getCustomerById(int customerId) async {
+    try {
+      final db = await DbHelper.getDatabase();
+      final tableCustomer = DbHelper.TABLE_CUSTOMER_SERVICE;
+
+      final result = await db.rawQuery(
+          "SELECT * FROM '$tableCustomer' WHERE id = '$customerId'");
+
+      if (result.isNotEmpty) {
+        return Customer.fromMap(map: result.first);
+      }
+
+      return null;
+    } catch (ex) {
+      debugPrint("DBEXCEPTION: ${ex}");
+      return null;
     }
   }
 }

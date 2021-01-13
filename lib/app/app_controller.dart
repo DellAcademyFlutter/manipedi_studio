@@ -6,9 +6,9 @@ import 'package:manipedi_studio/app/data/job_dao.dart';
 import 'package:manipedi_studio/app/model/customer.dart';
 import 'package:manipedi_studio/app/model/job.dart';
 
-import 'data/schedule_dao.dart';
-import 'data/scheduling_dao.dart';
-import 'model/schedule.dart';
+import 'package:manipedi_studio/app/data/schedule_dao.dart';
+import 'package:manipedi_studio/app/data/scheduling_dao.dart';
+import 'package:manipedi_studio/app/model/schedule.dart';
 import 'model/scheduling.dart';
 
 class AppController extends ChangeNotifier {
@@ -50,7 +50,7 @@ class AppController extends ChangeNotifier {
   removeCustomer({int index}) async {
     final id = customers[index].id;
     await customerDao.removeCustomer(id);
-    //await markingDao.deleteMarkerMarkings(markerId: id); //TODO
+    await schedulingDao.deleteScheduleSchedulings(scheduleId: id);
     customers.removeAt(index);
 
     notifyListeners();
@@ -69,6 +69,27 @@ class AppController extends ChangeNotifier {
   setCustomers({List<Customer> customers}) {
     this.customers = customers;
     notifyListeners();
+  }
+
+  /// Busca e retorna um nome de um [Customer] por seu id.
+  String getCustomerNameById(int customerId) {
+    for (var i = 0; i < customers.length; i++) {
+      if (customers[i].id == customerId) {
+        return customers[i].name;
+      }
+    }
+    notifyListeners();
+    return "ClienteNaoEncontrado";
+  }
+
+  Customer getCustomerByIdTemp(int customerId) {
+    for (var i = 0; i < customers.length; i++) {
+      if (customers[i].id == customerId) {
+        return customers[i];
+      }
+    }
+    notifyListeners();
+    return null;
   }
 
   //
@@ -96,7 +117,7 @@ class AppController extends ChangeNotifier {
   removeJob({int index}) async {
     final id = jobs[index].id;
     await jobDao.removeJob(id);
-    //await markingDao.deleteMarkerMarkings(markerId: id); //TODO
+    await schedulingDao.deleteScheduleSchedulings(scheduleId: id);
     jobs.removeAt(index);
 
     notifyListeners();
@@ -159,19 +180,21 @@ class AppController extends ChangeNotifier {
   removeSchedule({int index}) async {
     final id = schedules[index].id;
     await scheduleDao.removeSchedule(id);
-    //await markingDao.deleteMarkerMarkings(markerId: id); //TODO
+    await schedulingDao.deleteScheduleSchedulings(scheduleId: id);
+    final parsedDate = DateTime.parse(schedules[index].date);
+    deleteEventByDate(parsedDate);
     schedules.removeAt(index);
 
     notifyListeners();
   }
 
   /// Atualiza um [Schedule] na lista de [Schedules]s e no BD.
-  Future<int> updateSchedule({int index, Schedule newSchedule}) async {
+  updateSchedule({Schedule newSchedule}) async {
     await scheduleDao.updateSchedule(newSchedule);
-    schedules[index].setValues(otherSchedule: newSchedule);
+    schedules[getScheduleIndexById(newSchedule.id)]
+        .setValues(otherSchedule: newSchedule);
 
     notifyListeners();
-    return newSchedule.id;
   }
 
   /// Atribui a lista de [Schedule] com uma dada lista de [Schedules].
@@ -180,7 +203,7 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Recebe uma lista de [Schedules] e atribui em eventos
+  /// Recebe uma lista de [Schedules] e atribui em eventos
   setEventsByShedules() {
     DateTime parsedDate;
     for (var i = 0; i < schedules.length; i++) {
@@ -190,6 +213,23 @@ class AppController extends ChangeNotifier {
       });
     }
     notifyListeners();
+  }
+
+  /// Remove um evento por data
+  deleteEventByDate(DateTime time) {
+    if (events.containsKey(time)) {
+      events.remove(time);
+    }
+  }
+
+  /// Busca e retorna um o index de [Schedule] por seu id.
+  int getScheduleIndexById(int scheduleId) {
+    for (var i = 0; i < jobs.length; i++) {
+      if (schedules[i].id == scheduleId) {
+        return i;
+      }
+    }
+    return 0;
   }
 
   //
